@@ -40,7 +40,7 @@ export default function Invoice() {
             <div className="invoice-meta">
               <div>
                 <h1>BIN HAYAT</h1>
-                <p>Electric Store · Karachi, Pakistan</p>
+                <p>Electric Store · Dhakki, Dera Ismail Khan</p>
                 <p style={{ marginTop: '6px', fontSize: '12px' }}>⚡ Your Trusted Electrical Shop</p>
               </div>
               <div style={{ textAlign: 'right' }}>

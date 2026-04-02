@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import { getProducts } from '../services/products';
@@ -14,7 +14,9 @@ const navItems = [
 export default function Layout({ children }) {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [lowStockCount, setLowStockCount] = useState(0);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     getProducts()
@@ -25,6 +27,11 @@ export default function Layout({ children }) {
       .catch(() => {});
   }, []);
 
+  // Close sidebar on route change (mobile nav)
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
   async function handleLogout() {
     await logout();
     navigate('/login');
@@ -32,7 +39,12 @@ export default function Layout({ children }) {
 
   return (
     <div className="app-layout">
-      <aside className="sidebar no-print">
+      {/* Mobile overlay backdrop */}
+      {sidebarOpen && (
+        <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
+      )}
+
+      <aside className={`sidebar no-print${sidebarOpen ? ' sidebar-open' : ''}`}>
         <div className="sidebar-logo">
           <div className="sidebar-logo-icon">⚡</div>
           <h1>BIN HAYAT</h1>
@@ -65,7 +77,26 @@ export default function Layout({ children }) {
         </div>
       </aside>
 
-      <main className="main-content">{children}</main>
+      <div className="main-wrapper">
+        {/* Mobile top bar */}
+        <header className="mobile-topbar no-print">
+          <button
+            className="hamburger-btn"
+            onClick={() => setSidebarOpen((o) => !o)}
+            aria-label="Toggle menu"
+          >
+            <span className={`hamburger-icon${sidebarOpen ? ' open' : ''}`}>
+              <span /><span /><span />
+            </span>
+          </button>
+          <div className="mobile-topbar-title">
+            <span>⚡</span> BIN HAYAT
+          </div>
+          <div style={{ width: 40 }} />
+        </header>
+
+        <main className="main-content">{children}</main>
+      </div>
     </div>
   );
 }
